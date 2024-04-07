@@ -25,3 +25,8 @@ app.add_middleware(
 
 app.include_router(agent_router, prefix='/agents', tags=['agents'])
 app.include_router(front_data_router, prefix='/front-data', tags=['front-data'])
+
+
+@app.get('/healthcheck')
+def healthcheck():
+    return JSONResponse(content={'status': 'ok'}, status_code=200)
