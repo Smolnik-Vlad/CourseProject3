@@ -1,0 +1,58 @@
+version: "3.8"
+services:
+  fastapi:
+    restart: unless-stopped
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    image: "fastapi"
+    ports:
+      - "${APP_PORT:-8080}:8080"
+    volumes:
+      - ..:/code
+    depends_on:
+      - neo4j
+      - minio
+    entrypoint: ['uvicorn', 'src.main:app', '--host', '0.0.0.0', '--port' , '8080']
+    env_file:
+      - ../.env.sample
+      -  ../.env
+
+
+  neo4j:
+    container_name: neo4j
+    image: neo4j:latest
+    ports:
+      # HTTP (7474) and Bolt (7687).
+      - 7474:7474
+      - 7687:7687
+    environment:
+      - NEO4J_AUTH=neo4j/${NEO4J_PASSWORD:-password}
+      - NEO4J_apoc_export_file_enabled=true
+      - NEO4J_apoc_import_file_enabled=true
+      - NEO4J_apoc_import_file_use__neo4j__config=true
+    volumes:
+      - ../neo4j_db/data:/data
+      - ../neo4j_db/logs:/logs
+      - ../neo4j_db/import:/var/lib/neo4j/import
+
+  minio:
+    image: minio/minio:latest
+    command: server --console-address ":9001" /data/
+    ports:
+      - "9000:9000"
+      - "9002:9001"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    volumes:
+      - minio-storage:/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+
+volumes:
+  minio-storage:

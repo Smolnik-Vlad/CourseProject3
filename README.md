@@ -8,7 +8,7 @@ chmod +x scripts/entrypoint.sh
 ```
 
 ```shell
-docker-compose -f docker/docker-compose.yaml up
+docker-compose -f docker/docker-compose_win.yaml up
 ```
 
 Если при повторной сборке neo4j жалуется на `neo4j_db/import`:

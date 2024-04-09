@@ -18,7 +18,7 @@ def write_data_to_neo4j(uri, user, password, query: list):
 load_dotenv()
 
 if __name__ == "__main__":
-    uri = os.getenv("NEO4J_PATH").replace("neo4j", "localhost")
+    uri = os.getenv("NEO4J_PATH")
     user = os.getenv("NEO4J_USER")
     password = os.getenv("NEO4J_PASSWORD")
     constant_query = constant_query.replace("\n", "")
