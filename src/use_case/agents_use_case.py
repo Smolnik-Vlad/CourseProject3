@@ -22,3 +22,13 @@ class AgentsUseCase:
 
     async def create_new_data(self):
         return await self.database_repository.get_data_from_neo4j()
+
+    async def get_picture(self, name: str, artist_name: str, genre: str, style: str):
+        if name:
+            return await self.database_repository.get_picture_by_name(name)
+        if artist_name:
+            return await self.database_repository.get_picture_by_artist_name(artist_name)
+        if genre:
+            return await self.database_repository.get_picture_by_genre(genre)
+        if style:
+            return await self.database_repository.get_picture_by_art_style(style)
