@@ -1,10 +1,7 @@
 from src.repositories.repository import KnowledgeBaseRepository
 
 
-
 class AgentsUseCase:
-
-
     def __init__(self, database_repository):
         self.database_repository: KnowledgeBaseRepository = database_repository
 
@@ -23,12 +20,22 @@ class AgentsUseCase:
     async def create_new_data(self):
         return await self.database_repository.get_data_from_neo4j()
 
-    async def get_picture(self, name: str, artist_name: str, genre: str, style: str):
+    async def get_picture(
+        self,
+        name: str | None,
+        artist_name: str | None,
+        genre: str | None,
+        style: str | None,
+    ):
         if name:
             return await self.database_repository.get_picture_by_name(name)
         if artist_name:
-            return await self.database_repository.get_picture_by_artist_name(artist_name)
+            return await self.database_repository.get_picture_by_artist_name(
+                artist_name
+            )
         if genre:
             return await self.database_repository.get_picture_by_genre(genre)
         if style:
-            return await self.database_repository.get_picture_by_art_style(style)
+            return await self.database_repository.get_picture_by_art_style(
+                style
+            )

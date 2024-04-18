@@ -1,5 +1,16 @@
 ## ИСС по искусству
 
+### Для разработки
+1) 
+```shell
+pip3 install pre-commit
+```
+2) 
+```shell 
+pre-commit install
+```
+
+
 ### Запуск в докере:
 1) создать .env файл
 

@@ -19,7 +19,10 @@ class KnowledgeBaseRepository:
         return list_of_data
 
     async def get_picture_by_artist_name(self, artist_name: str):
-        stmt = "MATCH (n:Artist{name:'%s'})-[r:`Создал`]-(picture:Picture) RETURN picture" % artist_name
+        stmt = (
+            "MATCH (n:Artist{name:'%s'})-"
+            "[r:`Создал`]-(picture:Picture) RETURN picture" % artist_name
+        )
         data = await self.session.run(stmt)
         return await data.data()
 
@@ -34,6 +37,10 @@ class KnowledgeBaseRepository:
         return await data.data()
 
     async def get_picture_by_art_style(self, style: str):
-        stmt = "MATCH (picture:Picture)-[r:`Написана_в_стиле`]-(s:ArtStyle{name: '%s'}) RETURN picture" % style
+        stmt = (
+            "MATCH (picture:Picture)-"
+            "[r:`Написана_в_стиле`]-(s:ArtStyle{name: '%s'}) RETURN picture"
+            % style
+        )
         data = await self.session.run(stmt)
         return await data.data()
