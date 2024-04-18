@@ -12,5 +12,9 @@ def get_knowledgebase_rep(session=Depends(session_knowledge_base)):
     return KnowledgeBaseRepository(session)
 
 
-def get_agents_use_case(knowledgebase_rep: KnowledgeBaseRepository = Depends(get_knowledgebase_rep)) -> AgentsUseCase:
+def get_agents_use_case(
+    knowledgebase_rep: KnowledgeBaseRepository = Depends(
+        get_knowledgebase_rep
+    ),
+) -> AgentsUseCase:
     return AgentsUseCase(knowledgebase_rep)

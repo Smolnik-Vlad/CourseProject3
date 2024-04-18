@@ -1,9 +1,8 @@
 import os
 
+from constant_query import constant_query
 from dotenv import load_dotenv
 from neo4j import GraphDatabase
-
-from constant_query import constant_query
 
 
 def write_data_to_neo4j(uri, user, password, query: list):
