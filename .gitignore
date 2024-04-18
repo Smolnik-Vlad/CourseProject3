@@ -4,6 +4,8 @@ __pycache__/
 *$py.class
 .idea
 neo4j_db
+
+.mypy_cache
 # C extensions
 *.so
 
