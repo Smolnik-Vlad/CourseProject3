@@ -1,7 +1,8 @@
 from typing import Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 
+from src.cloud.s3 import S3Client
 from src.routers.depends.use_case_depends import get_agents_use_case
 from src.use_case.agents_use_case import AgentsUseCase
 
@@ -45,3 +46,15 @@ async def get_picture(
     agent_use_case: AgentsUseCase = Depends(get_agents_use_case),
 ):
     return await agent_use_case.get_picture(name, artist_name, genre, style)
+
+
+@agent_router.post(
+    "/image",
+)
+async def post_image(file: UploadFile):
+    s3 = S3Client()
+
+    key = await s3.put_object('test', file.file.read())
+    presigned = await s3.presign_obj(key)
+    print(presigned)
+    return {'key': key, 'presigned': presigned}
