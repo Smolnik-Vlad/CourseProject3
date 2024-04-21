@@ -1,3 +1,15 @@
+import io
+from typing import Optional
+
+from PIL import Image
+
+from src.cloud.s3 import S3Client
+from src.generating_models.get_tags import (
+    calculate_similarity,
+    get_text_tags,
+)
+from src.generating_models.image2text import get_text_from_image
+from src.generating_models.text2image import get_image_from_text
 from src.repositories.repository import KnowledgeBaseRepository
 
 
@@ -39,3 +51,85 @@ class AgentsUseCase:
             return await self.database_repository.get_picture_by_art_style(
                 style
             )
+
+    async def get_artist(self, name: str, picture_name: str):
+        if name:
+            return await self.database_repository.get_artist_by_name(name)
+        if picture_name:
+            return await self.database_repository.get_artist_by_picture_name(
+                picture_name
+            )
+
+    async def get_art_style(
+        self, name: Optional[str], picture_name: Optional[str]
+    ):
+        if name:
+            return await self.database_repository.get_art_style_by_name(name)
+        if picture_name:
+            return (
+                await self.database_repository.get_art_style_by_picture_name(
+                    picture_name
+                )
+            )
+
+    async def get_picture_by_id(self, picture_id: int):
+        return await self.database_repository.get_picture_by_id(picture_id)
+
+    async def get_artist_by_id(self, artist_id: int):
+        return await self.database_repository.get_artist_by_id(artist_id)
+
+    async def get_art_style_by_id(self, art_style_id: int):
+        return await self.database_repository.get_art_style_by_id(art_style_id)
+
+    async def generate_picture_by_description(
+        self, description: str, picture_name: str
+    ):
+        image_bytes = await get_image_from_text(description)
+        tags = await get_text_tags(description)
+
+        s3 = S3Client()
+        key = await s3.put_object(picture_name + '.png', image_bytes)
+        presigned = await s3.presign_obj(key)
+
+        return await self.database_repository.add_picture_to_db(
+            picture_name, description, key, "AI_ART", tags, presigned
+        )
+
+    async def generate_description_by_image(
+        self, file_bytes: bytes, picture_name: str
+    ):
+        description = await get_text_from_image(file_bytes)
+        tags = await get_text_tags(description)
+
+        s3 = S3Client()
+        key = await s3.put_object(picture_name + '.png', file_bytes)
+        presigned = await s3.presign_obj(key)
+
+        await self.database_repository.add_picture_to_db(
+            picture_name, description, key, "CUSTOM_ART", tags, presigned
+        )
+        return description
+
+    async def search_pictures_by_tags(self, description: str):
+        description_tags = await get_text_tags(description)
+        pictures_data = await self.database_repository.get_pictures_with_tags()
+        result_data = [
+            (
+                record,
+                await calculate_similarity(
+                    record["picture"]["tags"], description_tags
+                ),
+            )
+            for record in pictures_data
+        ]
+        result_data.sort(key=lambda x: x[1], reverse=True)
+        return [
+            record for record, similarity in result_data if similarity >= 0.1
+        ]
+
+    async def generate_picture_test(self, prompt: str):
+        image = await get_image_from_text(prompt)
+        return image
+
+    async def get_tags(self, description: str):
+        return await get_text_tags(description)
