@@ -35,7 +35,9 @@ class AgentsUseCase:
                 style
             )
 
-    async def get_artist(self, name: str, picture_name: str):
+    async def get_artist(
+        self, name: Optional[str], picture_name: Optional[str]
+    ):
         if name:
             return await self.database_repository.get_artist_by_name(name)
         if picture_name:

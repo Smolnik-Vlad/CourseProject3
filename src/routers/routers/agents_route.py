@@ -21,6 +21,24 @@ async def get_picture(
     return await agent_use_case.get_picture(name, artist_name, genre, style)
 
 
+@agent_router.get("/artist")
+async def get_art_style(
+    name: Optional[str] = None,
+    picture_name: Optional[str] = None,
+    agent_use_case: AgentsUseCase = Depends(get_agents_use_case),
+):
+    return await agent_use_case.get_artist(name, picture_name)
+
+
+@agent_router.get("/art_style")
+async def get_artist(
+    name: Optional[str] = None,
+    picture_name: Optional[str] = None,
+    agent_use_case: AgentsUseCase = Depends(get_agents_use_case),
+):
+    return await agent_use_case.get_art_style(name, picture_name)
+
+
 @agent_router.post(
     "/image",
 )
@@ -30,15 +48,6 @@ async def post_image(file: UploadFile):
     presigned = await s3.presign_obj(key)
     print(presigned)
     return {'key': key, 'presigned': presigned}
-
-
-@agent_router.get("/art_style")
-async def get_art_style(
-    name: Optional[str] = None,
-    picture_name: Optional[str] = None,
-    agent_use_case: AgentsUseCase = Depends(get_agents_use_case),
-):
-    return await agent_use_case.get_art_style(name, picture_name)
 
 
 @agent_router.get("/picture/{picture_id}")

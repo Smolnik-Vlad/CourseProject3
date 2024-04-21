@@ -13,34 +13,40 @@ class KnowledgeBaseRepository:
     async def get_pictures_with_tags(self):
         stmt = (
             "MATCH (picture:Picture) WHERE (picture.tags) "
-            "IS NOT NULL RETURN picture"
+            "IS NOT NULL RETURN picture, ID(picture) as picture_id"
         )
         data = await self.session.run(stmt)
         return await data.data()
 
     async def get_picture_by_artist_name(self, artist_name: str):
         stmt = (
-            "MATCH (n:Artist{name:'%s'})-"
-            "[r:`Создал`]-(picture:Picture) RETURN picture" % artist_name
+            "MATCH (n:Artist{name:'%s'})-[r:`Создал`]-(picture:Picture) "
+            "RETURN picture, ID(picture) as picture_id" % artist_name
         )
         data = await self.session.run(stmt)
         return await data.data()
 
     async def get_picture_by_genre(self, genre: str):
-        stmt = "MATCH (picture:Picture{genre:'%s'}) RETURN picture" % genre
+        stmt = (
+            "MATCH (picture:Picture{genre:'%s'}) "
+            "RETURN picture, ID(picture) as picture_id" % genre
+        )
         data = await self.session.run(stmt)
         return await data.data()
 
     async def get_picture_by_name(self, name: str):
-        stmt = "MATCH (picture:Picture{name:'%s'}) RETURN picture" % name
+        stmt = (
+            "MATCH (picture:Picture{name:'%s'}) "
+            "RETURN picture, ID(picture) as picture_id" % name
+        )
         data = await self.session.run(stmt)
         return await data.data()
 
     async def get_picture_by_art_style(self, style: str):
         stmt = (
             "MATCH (picture:Picture)-"
-            "[r:`Написана_в_стиле`]-(s:ArtStyle{name: '%s'}) RETURN picture"
-            % style
+            "[r:`Написана_в_стиле`]-(s:ArtStyle{name: '%s'}) "
+            "RETURN picture, ID(picture) as picture_id" % style
         )
         data = await self.session.run(stmt)
         return await data.data()
@@ -52,28 +58,34 @@ class KnowledgeBaseRepository:
         return await data.data()
 
     async def get_artist_by_name(self, name: str):
-        stmt = "MATCH (artist:Artist{name:'%s'}) RETURN artist" % name
+        stmt = (
+            "MATCH (artist:Artist{name:'%s'}) "
+            "RETURN artist, ID(artist) as artist_id" % name
+        )
         data = await self.session.run(stmt)
         return await data.data()
 
     async def get_artist_by_picture_name(self, picture_name: str):
         stmt = (
             "MATCH (artist:Artist)-[r:`Создал`]-(picture:Picture{name:'%s'})\
-            RETURN artist"
+            RETURN artist, ID(artist) as artist_id"
             % picture_name
         )
         data = await self.session.run(stmt)
         return await data.data()
 
     async def get_art_style_by_name(self, name: str):
-        stmt = "MATCH (style:ArtStyle{name:'%s'}) RETURN style" % name
+        stmt = (
+            "MATCH (style:ArtStyle{name:'%s'}) "
+            "RETURN style, ID(style) as style_id" % name
+        )
         data = await self.session.run(stmt)
         return await data.data()
 
     async def get_art_style_by_picture_name(self, picture_name: str):
         stmt = (
             "MATCH (p:Picture{name: '%s'})-[r:`Написана_в_стиле`]-\
-            (style:ArtStyle) RETURN style"
+            (style:ArtStyle) RETURN style, ID(style) as style_id"
             % picture_name
         )
         data = await self.session.run(stmt)
@@ -81,24 +93,24 @@ class KnowledgeBaseRepository:
 
     async def get_picture_by_id(self, picture_id: int):
         stmt = (
-            "MATCH (picture:Picture) WHERE id(picture) = %s RETURN picture"
-            % picture_id
+            "MATCH (picture:Picture) WHERE id(picture) = %s "
+            "RETURN picture, ID(picture) as picture_id" % picture_id
         )
         data = await self.session.run(stmt)
         return await data.data()
 
     async def get_artist_by_id(self, artist_id: int):
         stmt = (
-            "MATCH (artist:Artist) WHERE id(artist) = %s RETURN artist"
-            % artist_id
+            "MATCH (artist:Artist) WHERE id(artist) = %s "
+            "RETURN artist, ID(artist) as artist_id" % artist_id
         )
         data = await self.session.run(stmt)
         return await data.data()
 
     async def get_art_style_by_id(self, art_style_id: int):
         stmt = (
-            "MATCH (style:ArtStyle) WHERE id(style) = %s RETURN style"
-            % art_style_id
+            "MATCH (style:ArtStyle) WHERE id(style) = %s "
+            "RETURN style, ID(style) as style_id" % art_style_id
         )
         data = await self.session.run(stmt)
         return await data.data()
