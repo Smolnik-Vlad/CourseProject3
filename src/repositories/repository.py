@@ -44,3 +44,9 @@ class KnowledgeBaseRepository:
         )
         data = await self.session.run(stmt)
         return await data.data()
+
+    async def get_theme_features(self, theme: str):
+
+        stmt = "MATCH (theme: Theme{name: '%s'}) RETURN theme" % theme
+        data = await self.session.run(stmt)
+        return await data.data()
