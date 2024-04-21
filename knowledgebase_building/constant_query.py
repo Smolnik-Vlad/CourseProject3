@@ -257,4 +257,8 @@ MATCH(p27:Picture{name:"Пшеничное поле с воронами"}),(s27:
 MATCH(p28:Picture{name:"Постоянство памяти"}),(s28:ArtStyle{name: "Сюрреализм"}) CREATE (p28)-[:Написана_в_стиле]->(s28);
 MATCH(p29:Picture{name:"Метаморфозы Нарцисса"}),(s29:ArtStyle{name: "Сюрреализм"}) CREATE (p29)-[:Написана_в_стиле]->(s29);
 MATCH(p30:Picture{name:"Искушение святого Антония"}),(s30:ArtStyle{name: "Сюрреализм"}) CREATE (p30)-[:Написана_в_стиле]->(s30);
+
+CREATE (light_theme: Theme{name: "light_theme", button: [255, 255, 255], primary: [230, 118, 39], fromGradient: [254, 144, 65], toGradient: [232, 122, 42], background: [255, 255, 255]});
+CREATE (dark_theme: Theme{name: "dark_theme", button: [245, 245, 245], primary: [81, 101, 121], fromGradient: [90, 114, 139], toGradient: [54, 70, 87], background: [55, 59, 62]});
+
 """
