@@ -1,4 +1,6 @@
-from src.repositories.repository import KnowledgeBaseRepository
+from src.repositories.repositories.repository import (
+    KnowledgeBaseRepository,
+)
 
 
 class DataFrontUseCase:
