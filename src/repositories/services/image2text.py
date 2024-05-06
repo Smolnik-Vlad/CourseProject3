@@ -1,3 +1,4 @@
+import async_google_trans_new
 import httpx
 
 api_key = "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"
@@ -14,5 +15,6 @@ async def get_text_from_image(file_bytes):
             API_URL, headers=headers, data=file_bytes, timeout=None
         )
         text = response.json()[0]["generated_text"]
-        print(text)
-    return text
+        g = async_google_trans_new.AsyncTranslator()
+        ru_text = await g.translate(text, "ru")
+    return ru_text
