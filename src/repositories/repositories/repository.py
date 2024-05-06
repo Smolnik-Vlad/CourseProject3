@@ -10,6 +10,14 @@ class KnowledgeBaseRepository:
     async def get_agents(self):
         return {'agents': 'agents'}
 
+    async def get_pictures(self):
+        stmt = (
+            "MATCH (picture: Picture)"
+            "RETURN picture, ID(picture) as picture_id"
+        )
+        data = await self.session.run(stmt)
+        return await data.data()
+
     async def get_pictures_with_tags(self):
         stmt = (
             "MATCH (picture:Picture) WHERE (picture.tags) "
@@ -131,3 +139,11 @@ class KnowledgeBaseRepository:
             )
         )
         await self.session.run(data)
+
+    async def update_picture_info(self, name, key, image_link):
+        stmt = (
+            "MATCH (picture: Picture {name: '%s'}) SET "
+            "picture.image = '%s', picture.image_link = '%s'"
+            % (name, key, quote(image_link))
+        )
+        await self.session.run(stmt)

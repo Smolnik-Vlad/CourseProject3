@@ -34,6 +34,8 @@ class AgentsUseCase:
             return await self.database_repository.get_picture_by_art_style(
                 style
             )
+        else:
+            return await self.database_repository.get_pictures()
 
     async def get_artist(
         self, name: Optional[str], picture_name: Optional[str]
@@ -122,3 +124,14 @@ class AgentsUseCase:
 
     async def get_tags(self, description: str):
         return await self.tags_use_case.get_text_tags(description)
+
+    async def update_picture_info(self, picture_name: str, picture_file):
+        s3 = S3Client()
+        key = await s3.put_object(
+            picture_name + '.png', picture_file.file.read()
+        )
+        presigned = await s3.presign_obj(key)
+        await self.database_repository.update_picture_info(
+            picture_name, key, presigned
+        )
+        return {'key': key, 'presigned': presigned}
