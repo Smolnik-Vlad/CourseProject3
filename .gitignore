@@ -2,7 +2,10 @@
 __pycache__/
 *.py[cod]
 *$py.class
+.idea
+neo4j_db
 
+.mypy_cache
 # C extensions
 *.so
 
@@ -151,3 +154,4 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+neo4j_db/

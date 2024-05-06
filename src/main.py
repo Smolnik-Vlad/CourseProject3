@@ -8,11 +8,14 @@ from src.routers.routers.front_data_route import front_data_router
 
 app = FastAPI()
 
+
 @app.exception_handler(CustomBaseException)
 async def custom_exception_handler(request, exc):
     error_class_name = exc.__class__.__name__
     error_detail = f"Custom error: {error_class_name}"
-    return JSONResponse(status_code=exc.status_code, content={"detail": error_detail})
+    return JSONResponse(
+        status_code=exc.status_code, content={"detail": error_detail}
+    )
 
 
 app.add_middleware(
@@ -24,4 +27,11 @@ app.add_middleware(
 )
 
 app.include_router(agent_router, prefix='/agents', tags=['agents'])
-app.include_router(front_data_router, prefix='/front-data', tags=['front-data'])
+app.include_router(
+    front_data_router, prefix='/front-data', tags=['front-data']
+)
+
+
+@app.get('/healthcheck')
+def healthcheck():
+    return JSONResponse(content={'status': 'ok'}, status_code=200)
