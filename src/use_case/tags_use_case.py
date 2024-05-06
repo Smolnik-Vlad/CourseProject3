@@ -1,3 +1,6 @@
+import asyncio
+
+import async_google_trans_new
 import nltk
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer
@@ -50,9 +53,15 @@ class TagsUseCase:
         return expanded_tags
 
     async def get_text_tags(self, text: str):
-        tags = await self.preprocess_text(text)
+        g = async_google_trans_new.AsyncTranslator()
+        en_text = await g.translate(text, "en")
+        tags = await self.preprocess_text(en_text)
         expanded_tags = await self.expand_tags(tags)
-        return [tag.replace("_", " ") for tag in expanded_tags]
+        result = []
+        for tag in expanded_tags:
+            result.append(g.translate(tag.replace("_", " "), "ru"))
+        new_result = await asyncio.gather(*result)
+        return [res.strip() for res in new_result]
 
     async def calculate_similarity(self, tags1, tags2):
         tags1_set = set(tags1)
