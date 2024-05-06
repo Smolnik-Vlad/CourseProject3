@@ -42,12 +42,12 @@ async def get_artist(
 @agent_router.post(
     "/image",
 )
-async def post_image(file: UploadFile):
-    s3 = S3Client()
-    key = await s3.put_object('test', file.file.read())
-    presigned = await s3.presign_obj(key)
-    print(presigned)
-    return {'key': key, 'presigned': presigned}
+async def post_image(
+    picture_name: str,
+    picture_file: UploadFile,
+    agent_use_case: AgentsUseCase = Depends(get_agents_use_case),
+):
+    return await agent_use_case.update_picture_info(picture_name, picture_file)
 
 
 @agent_router.get("/picture/{picture_id}")
