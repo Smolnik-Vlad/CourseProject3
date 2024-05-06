@@ -1,4 +1,8 @@
+import os
+import shutil
 from typing import Optional
+
+import speech_recognition as sr
 
 from src.repositories.repositories.repository import (
     KnowledgeBaseRepository,
@@ -7,6 +11,8 @@ from src.repositories.repositories.s3 import S3Client
 from src.repositories.services.image2text import get_text_from_image
 from src.repositories.services.text2image import get_image_from_text
 from src.use_case.tags_use_case import TagsUseCase
+
+recognizer = sr.Recognizer()
 
 
 class AgentsUseCase:
@@ -135,3 +141,22 @@ class AgentsUseCase:
             picture_name, key, presigned
         )
         return {'key': key, 'presigned': presigned}
+
+    async def get_data_from_voice(self, file):
+        try:
+            with open(file.filename, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            with sr.AudioFile(file.filename) as source:
+                print(file.filename)
+                audio_data = recognizer.record(source)
+                audio_data = recognizer.recognize_google(audio_data)
+                return audio_data
+
+        except sr.UnknownValueError:
+            return {"status": "error", "message": "Could not understand audio"}
+        except sr.RequestError:
+            return {"status": "error", "message": "Could not request results"}
+        except Exception as e:
+            return {"status": "error", "message": str(e)}
+        finally:
+            os.remove(file.filename)

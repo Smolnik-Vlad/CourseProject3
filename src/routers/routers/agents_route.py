@@ -124,3 +124,11 @@ async def get_tags_test(
     agent_use_case: AgentsUseCase = Depends(get_agents_use_case),
 ):
     return await agent_use_case.get_tags(description)
+
+
+@agent_router.post("/voice-input")
+async def generate_picture_by_voice_input(
+    file: UploadFile,
+    agent_use_case: AgentsUseCase = Depends(get_agents_use_case),
+):
+    return await agent_use_case.get_data_from_voice(file)
